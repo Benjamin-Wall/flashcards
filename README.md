@@ -1,70 +1,115 @@
-# Getting Started with Create React App
+# Flashcards
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+In this project, i’ll build a flashcards program where a user can create topics and additionally create quizzes for each topic, each quiz will have flashcards that the user can define.
 
-## Available Scripts
+The live site can be accessed here: https://codecademy-flashcards.netlify.app
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Project Goals
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+In this project, you will practice using Redux and Redux Toolkit to manage the complex state of a flashcard-style quiz app. Users will be able to create their own topics, quizzes for those topics, and flashcards for those quizzes. Users will also be able to interact with their quizzes by flipping flashcards over.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+This app uses uuidv4() function from the uuid package to create unique identifiers for topics/quizzes/cards. Below, you can see an example of how this function is used:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```js
+import { v4 as uuidv4 } from "uuid";
 
-### `npm run build`
+let uniqueId = uuidv4();
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+console.log(uniqueId); // Prints '1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed'
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+At a high level, your application will be able to handle the following URL routes, each with their own functionality:
 
-### `npm run eject`
+On the '/topics/new' page:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Users can create topics
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+On the '/topics' page:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Users can view all topics
+- Users can click on an individual topic and be redirected to the page for that topic
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+On the /topics/:topicId page:
 
-## Learn More
+- Users can view an individual topic and all quizzes for that topic
+- Users can click on a quiz associated with a topic and be redirected to that quiz’s page
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+On the 'quizzes/new' page:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- Users can create quizzes that are associated with topics and contain lists of flashcards
+- Users can add and remove card fields in the new quiz form
 
-### Code Splitting
+On the '/quizzes' page:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Users can view all quizzes
+- Users can click on an individual quiz and be redirected to that quiz’s page
 
-### Analyzing the Bundle Size
+On the '/quizzes/:quizId' page:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Users can view an individual quiz and flip cards over
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Before you start writing code, take a moment to review our recommended state structure:
 
-### Advanced Configuration
+- Your app will include three slices: one for topics, one for quizzes, and one for cards.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Each slice’s state should include an object storing all the topics/quizzes/cards keyed by their id. This will allow you to quickly retrieve an object’s information whenever you need to look it up.
 
-### Deployment
+- Each individual quiz will have a topicId value corresponding to an individual topic in state.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- Similarly, each topic which will have a quizIds array corresponding to the associated quizzes in state.
 
-### `npm run build` fails to minify
+All together, your app state will look like this:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```js
+{
+  topics: {
+    topics: {
+      '123': {
+        id: '123',
+        name: 'example topic',
+        icon: 'icon url',
+        quizIds: ['456']
+      }
+    }
+  },
+  quizzes: {
+    quizzes: {
+      '456': {
+        id: '456',
+        topicId: '123',
+        name: 'quiz for example topic',
+        cardIds: ['789', '101', '102']
+      }
+    }
+  },
+  cards: {
+    cards: {
+      '789': {
+        id: '789',
+        front: 'front text',
+        back: 'back text'
+      },
+      '101': {
+        id: '101',
+        front: 'front text',
+        back: 'back text'
+      },
+      '102': {
+        id: '102',
+        front: 'front text',
+        back: 'back text'
+      },
+    }
+  }
+}
+```
+
+---
